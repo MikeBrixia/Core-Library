@@ -1,0 +1,16 @@
+{
+    "name": "com.gameplay.CoreLibrary.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:1ff3b16784d562741a132e24cdc2772d"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
