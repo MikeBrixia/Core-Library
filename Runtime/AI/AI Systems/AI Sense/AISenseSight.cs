@@ -23,13 +23,13 @@ namespace Core.AI
         public LayerMask targetPriority;
 
         private SenseResult senseResult = new SenseResult();
-
+        
         public override SenseResult OnSenseUpdate()
         {
             Collider2D[] colliders = Physics2D.OverlapCircleAll(owner.transform.position, radius);
             foreach (Collider2D collider in colliders)
             {
-                if (collider.GetComponent<SenseStimuliSource>() != null)
+                if (IsStimuliSource(collider.gameObject))
                 {
                     Vector2 targetDirection = Math.GetUnitDirectionVector(owner.transform.position, collider.transform.position);
                     RaycastHit2D result = Physics2D.Raycast(owner.transform.position, targetDirection, radius, targets);

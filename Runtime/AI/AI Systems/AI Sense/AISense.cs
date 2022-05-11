@@ -39,14 +39,14 @@ namespace Core.AI
         /// Called each time this sense gets updated
         ///</summary>
         public abstract SenseResult OnSenseUpdate();
-
+        
         ///<summary>
         /// Called each time this sense is updated with a report event.
         ///</summary>
         public abstract SenseResult OnSenseUpdate(GameObject sensedObject);
         
         public abstract void DrawDebugSense();
-
+        
         ///<summary>
         /// Make a copy of this Sense asset.
         ///</summary>
@@ -59,6 +59,17 @@ namespace Core.AI
         public virtual void InitializeSense(GameObject owner)
         {
             this.owner = owner;
+        }
+        
+        ///<summary>
+        /// Check if the sensed object is a stimuli source.
+        /// Check this condition when you want your sense to only
+        /// sense objects which are registered as stimuli source.
+        ///</summary>
+        ///<returns> True if object is a stimuli source, false otherwise</returns>
+        protected bool IsStimuliSource(GameObject target)
+        {
+            return target.GetComponent<SenseStimuliSource>() != null;
         }
     }
     
