@@ -36,6 +36,22 @@ namespace Core
     {
       return (to - from).normalized;
     }
+
+    ///<summary>
+    /// Rotate a vector by quaternion.
+    ///</summary>
+    ///<param name="a"> The vector you want to rotate</param>
+    ///<param name="rotateAmount"> The matrix responsible of rotating this vector</param>
+    ///<returns> A new vector rotated by rotateAmount</returns>
+    public static Vector2 RotateVector(Vector2 a, Quaternion rotateAmount)
+    {
+      return rotateAmount * a;
+    }
+
+    public static float RadiansToDegrees(float radianAngle)
+    {
+      return radianAngle * Mathf.Rad2Deg;
+    }
   }
 }
 

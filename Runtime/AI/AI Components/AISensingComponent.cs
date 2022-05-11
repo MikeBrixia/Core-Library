@@ -4,103 +4,126 @@ using UnityEngine;
 using UnityEngine.Events;
 using System;
 
-namespace Core 
+namespace Core.AI
 {
     public class AISensingComponent : MonoBehaviour
     {
-      public List<AISenseScriptable> Senses;
 
-      [Tooltip("The rate at which this component it's going to update senses. N.B. if UpdateEveryFrame is set to true this value will be ignored")]
-      public float UpdateRate = 0.1f;
-      public List<GameObject> SensableObjects;
-      public UnityEvent<SenseResult> OnSenseUpdateCallback;
-      
-      ///<summary>
-      /// All the decisions registered inside this component
-      ///</summary>
-      public Dictionary<Type, Sense> SenseMap  { get; private set; }
+        [SerializeField] private List<AISense> senses;
 
-      ///<summary>
-      ///Senses which requires to be updated every frame
-      ///</summary>
-      private List<Sense> TickSenses = new List<Sense>();
-      private List<Sense> CustomUpdateSenses = new List<Sense>();
-      
-      void Awake()
-      {
-        SenseMap = new Dictionary<Type, Sense>();
-      }
+        ///<summary>
+        /// When set to true senses will be updated each frame
+        ///</summary>
+        [Tooltip("When set to true senses will be update each frame")]
+        public bool canTick = false;
 
-      // Start is called before the first frame update
-      void Start()
-      {
-        foreach(AISenseScriptable Sense in Senses)
+        [Tooltip("The rate at which this component it's going to update senses. N.B. if canTick is set to true this value will be ignored")]
+        public float updateInterval = 0.1f;
+
+        public List<GameObject> sensableObjects;
+        public UnityEvent<SenseResult> OnSenseUpdateCallback;
+
+        ///<summary>
+        /// All the senses registered inside this component by type.
+        /// SensingComponent can only have 1 sense per type registered.
+        ///</summary>
+        public Dictionary<Type, AISense> registeredSenses { get; private set; }
+
+        /// <summary>
+        /// All the registered senses which this component it's goingto update.
+        /// </summary>
+        public List<AISense> componentSenses { get; private set; }
+
+        private bool allReportBased = false;
+
+        void Awake()
         {
-          CreateSense(Sense);
+            registeredSenses = new Dictionary<Type, AISense>();
+            componentSenses = new List<AISense>();
         }
-        InvokeRepeating("SenseUpdate", 0.1f, UpdateRate);
-      }
-       
-      ///<summary>
-      /// Create a brand new sense and add it to the sense list
-      ///</summary>
-      public Sense CreateSense(AISenseScriptable Sense)
-      {
-        Sense NewSense = (Sense) System.Activator.CreateInstance(Sense.SenseClass.SelectedType);
-        NewSense.InitializeSense(Sense, this);
-        if(Sense.UpdateEveryFrame)
-        {
-          TickSenses.Add(NewSense);
-        }
-        else
-        {
-          CustomUpdateSenses.Add(NewSense);
-        }
-        SenseMap.Add(NewSense.GetType(), NewSense);
-        return NewSense;
-      }
 
-      // Update is called once per frame
-      void Update()
-      {
-        foreach(Sense TickableSense in TickSenses)
+        // Start is called before the first frame update
+        void Start()
         {
-          if(!TickableSense.SenseProperties.IsReportBased)
-          {
-            foreach(GameObject Object in SensableObjects)
+            // Initialize senses for this component
+            senses.ForEach(sense => CreateSense(sense));
+            
+            foreach (AISense sense in registeredSenses.Values)
             {
-              SenseResult Result = TickableSense.OnSenseUpdate(Object);
-              OnSenseUpdateCallback.Invoke(Result);
+                allReportBased = sense.reportBased;
+                // If at least one registered sense it's not report based
+                // notify the component that it will need to update
+                if (!allReportBased)
+                    break;
             }
-          }
+
+            if (!canTick && !allReportBased)
+                InvokeRepeating("SenseUpdate", 0.1f, updateInterval);
         }
-      }
-       
-      void SenseUpdate()
-      {
-         foreach(Sense sense in CustomUpdateSenses)
-          {
-            if(!sense.SenseProperties.IsReportBased)
+
+        ///<summary>
+        /// Create a brand new sense from an asset and register it.
+        ///</summary>
+        public AISense CreateSense(AISense sense)
+        {
+            AISense createdSense = sense.Clone();
+            createdSense.InitializeSense(gameObject);
+            registeredSenses.Add(createdSense.GetType(), createdSense);
+            return createdSense;
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+            if (canTick && !allReportBased)
             {
-              foreach(GameObject Object in SensableObjects)
-              {
-                SenseResult Result = sense.OnSenseUpdate(Object);
-                OnSenseUpdateCallback.Invoke(Result);
-              }
+                foreach (AISense sense in registeredSenses.Values)
+                {
+                    // If sense is not report based update it
+                    if (!sense.reportBased)
+                        UpdateSense(sense);
+                }
             }
-          }
-      }
+        }
 
-      public List<Sense> GetCustomUpdateSenses()
-      {
-        return CustomUpdateSenses;
-      }
+        void SenseUpdate()
+        {
+            if (!allReportBased)
+            {
+                foreach (AISense sense in registeredSenses.Values)
+                {
+                    // If sense is not report based update it
+                    if (!sense.reportBased)
+                    {
+                        SenseResult result = sense.OnSenseUpdate();
+                        OnSenseUpdateCallback.Invoke(result);
+                    }
+                }
+            }
+        }
 
-      public List<Sense> GetTickUpdateSenses()
-      {
-        return TickSenses;
-      }
-
+        ///<summary>
+        /// Perform an update of the given sense. This is the
+        /// standard version
+        ///</summary>
+        ///<param name="sense"> The sense to update</param>
+        public void UpdateSense(AISense sense)
+        {
+            SenseResult result = sense.OnSenseUpdate();
+            OnSenseUpdateCallback.Invoke(result);
+        }
+        
+        ///<summary>
+        /// Perform an update of the given sense. This is the
+        /// report based version
+        ///</summary>
+        ///<param name="sense"> The sense to update</param>
+        ///<param name="instigator"> The instigator of this update</param>
+        public void UpdateSense(AISense sense, GameObject instigator)
+        {
+           SenseResult result = sense.OnSenseUpdate(instigator);
+           OnSenseUpdateCallback.Invoke(result);
+        }
     }
 }
 

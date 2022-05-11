@@ -10,10 +10,34 @@ namespace Core
     [CustomPropertyDrawer(typeof(SubclassOf<>))]
     class SubclassOfPropertyDrawer : PropertyDrawer
     {
-    
        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
        {
            EditorGUI.BeginProperty(position, label, property);
+           DisplayProperty(property, position);
+           EditorGUI.EndProperty();
+        }
+
+       private List<Type> GetAllSubclassesOf(Type parentType)
+       {
+           List<Type> subclasses = new List<Type>();
+           subclasses.Add(null);
+           subclasses.Add(parentType);
+           foreach (System.Reflection.Assembly assembly 
+                in System.AppDomain.CurrentDomain.GetAssemblies())
+           {
+              foreach (Type type in assembly.GetTypes())
+              {
+                if (type.IsSubclassOf(parentType))
+                {
+                    subclasses.Add(type);
+                }
+              }
+           }     
+           return subclasses;
+       }
+
+       private void DisplayProperty(SerializedProperty property, Rect position)
+       {
            // Find useful Type objects
            Type selectedType = Type.GetType(property.FindPropertyRelative("SubclassTypeQualifiedName").stringValue);
            Type parentType = fieldInfo.FieldType.GetGenericArguments()[0];
@@ -39,7 +63,7 @@ namespace Core
 
                stringOptions[i] = allTypes[i].ToString();
            }
- 
+           
            // Build dropdown (Popup) menu
            selectedIndex = EditorGUI.Popup(position, property.displayName, selectedIndex, stringOptions);
            Type newSelectedType = allTypes[selectedIndex];
@@ -47,27 +71,6 @@ namespace Core
            // Update string values. The actual Type object can be retrieved with propertyName.SelectedType.
            property.FindPropertyRelative("SubclassTypeQualifiedName").stringValue = newSelectedType != null? newSelectedType.AssemblyQualifiedName : "Null";
            property.FindPropertyRelative("SubclassTypeName").stringValue = newSelectedType?.ToString();
-
-          EditorGUI.EndProperty();
-        }
-
-       private List<Type> GetAllSubclassesOf(Type parentType)
-       {
-           List<Type> subclasses = new List<Type>();
-           subclasses.Add(null);
-           subclasses.Add(parentType);
-           foreach (System.Reflection.Assembly assembly 
-                in System.AppDomain.CurrentDomain.GetAssemblies())
-           {
-              foreach (Type type in assembly.GetTypes())
-              {
-                if (type.IsSubclassOf(parentType))
-                {
-                    subclasses.Add(type);
-                }
-              }
-           }     
-           return subclasses;
        }
     }
 }
