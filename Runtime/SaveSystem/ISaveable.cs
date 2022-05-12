@@ -8,4 +8,9 @@ public interface ISaveable
     /// Called when the object gets saved to disk.
     ///</summary>
     public void OnObjectSaved();
+    
+    ///<summary>
+    /// Called when the object gets loaded from disk.
+    ///</summary>
+    public void OnObjectLoaded();
 }
