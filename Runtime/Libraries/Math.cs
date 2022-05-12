@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Core
 {
-  public class Math
+  public static class Math
   {
     /// <summary>
     /// Get parable point at given time.
@@ -47,10 +47,25 @@ namespace Core
     {
       return rotateAmount * a;
     }
-
+    
+    ///<summary>
+    /// Convert an angle from radians to degrees.
+    ///</summary>
+    ///<param name="radianAngle"> The angle to convert in degrees. </param>
+    ///<returns> The angle in degrees</returns>
     public static float RadiansToDegrees(float radianAngle)
     {
       return radianAngle * Mathf.Rad2Deg;
+    }
+    
+    ///<summary>
+    /// Convert an angle from degrees to radians.
+    ///</summary>
+    ///<param name="degreeAngle"> The angle to convert in radians. </param>
+    ///<returns> The angle in radians</returns>
+    public static float DegreesToRadians(float degreeAngle)
+    {
+      return degreeAngle * Mathf.Deg2Rad;
     }
   }
 }

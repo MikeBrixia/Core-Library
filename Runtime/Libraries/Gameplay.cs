@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-namespace Core
+namespace Core.Gameplay
 {
-   public class Gameplay
+   public static class GameplayLib
    {
       ///<summary>
       /// Apply damage to a given component
