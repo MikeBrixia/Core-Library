@@ -4,143 +4,112 @@ using UnityEngine;
 
 namespace Core
 {
-   public class ProjectileMovement2D : MonoBehaviour
-   {
-    public float InitialSpeed = 5f;
-    public float MaxSpeed = 10f;
-    public float Acceleration = 1f;
-    public Vector2 Direction;
-    
-    public GameObject homingTarget
+    public class ProjectileMovement2D : MonoBehaviour
     {
-        get
+        public float initialSpeed = 5f;
+        public float maxSpeed = 10f;
+        public float acceleration = 1f;
+        public Vector2 direction;
+        public bool impulse = false;
+        public GameObject homingTarget
         {
-            return HomingTarget;
-        }
-        set
-        {
-            // When there is no homing target use default direction.
-            if(value == null) 
-            {  
-               if(MovementDirection.Equals(Vector2.zero)) { MovementDirection = Direction; }
-               Velocity.x = HorizontalSpeed * MovementDirection.x;
-               Velocity.y = VerticalSpeed * MovementDirection.y;
-            }
-            else { this.HomingTarget = value; }
-        }
-    }
-
-    /// <summary>
-    /// the velocity of the projectile
-    /// </summary>
-    public Vector2 velocity { get; }
-    [Tooltip("if set to true gravity will be applied to the projectile. N.B. if it is a dynamic body this component will use Rigid body gravity scale for gravity simulation")]
-    public bool Gravity = true;
-    
-    [SerializeField] private GameObject HomingTarget;
-    private Vector2 Velocity;
-    private float CurrentMovementSpeed;
-    private Rigidbody2D RigidbodyComponent;
-    private Vector2 MovementDirection;
-    private float HorizontalSpeed;
-    private float VerticalSpeed;
-
-    void Awake()
-    {
-        RigidbodyComponent = GetComponent<Rigidbody2D>();
-        CurrentMovementSpeed = InitialSpeed;
-        HorizontalSpeed = InitialSpeed;
-        VerticalSpeed = InitialSpeed;
-    }
-    
-    void Start()
-    {
-     if(!Gravity)
-     {
-        RigidbodyComponent.gravityScale = 0f;
-     }
-     OnBeginProjectile();
-    } 
-
-    private void OnBeginProjectile()
-    {
-       Velocity = InitialSpeed * Direction;
-    }
-    
-    void FixedUpdate()
-    {
-        if(HomingTarget)
-        {
-            MovementDirection = Math.GetUnitDirectionVector(transform.root.position, HomingTarget.gameObject.transform.position);
-            // Calculate horizontal speed
-            Velocity.x = HorizontalSpeed * MovementDirection.x;
-            // Calculate vertical speed
-            Velocity.y = VerticalSpeed * MovementDirection.y;
-        }
-        else if(Gravity && !RigidbodyComponent.isKinematic)
-        {  
-            Velocity.y += Physics2D.gravity.y * RigidbodyComponent.gravityScale * Time.fixedDeltaTime;
-        }
-    
-        // When there is acceleration and speed is below max, calculate acceleration
-        if(Acceleration > 0f)
-        {
-            float AbsoluteXVelocity = Mathf.Abs(Velocity.x);
-            float AbsoluteYVelocity = Mathf.Abs(Velocity.y);
-            // Apply acceleration on both X and Y axis
-            if(AbsoluteXVelocity < MaxSpeed && MovementDirection.x != 0f)
+            get
             {
-               // Apply horizontal accelaration
-               ApplyAcceleration(ref Velocity.x);
-               AbsoluteXVelocity = Velocity.x;
-               HorizontalSpeed = Mathf.Clamp(AbsoluteXVelocity, InitialSpeed, MaxSpeed);
+                return HomingTarget;
             }
-            if(AbsoluteYVelocity < MaxSpeed && MovementDirection.y != 0f)
+            set
             {
-               // Apply vertical accelaration
-               ApplyAcceleration(ref Velocity.y);
-               AbsoluteYVelocity = Velocity.y;
-               VerticalSpeed = Mathf.Clamp(AbsoluteYVelocity, InitialSpeed, MaxSpeed);
+                // When there is no homing target use default direction.
+                if (value == null)
+                {
+                    if (movementDirection.Equals(Vector2.zero))
+                        movementDirection = direction;
+                }
+                else
+                    this.HomingTarget = value;
             }
         }
 
-        // Apply movement
-        if(RigidbodyComponent.isKinematic) 
+        /// <summary>
+        /// the velocity of the projectile
+        /// </summary>
+        public Vector2 bodyVelocity 
         { 
-            RigidbodyComponent.MovePosition(RigidbodyComponent.position + Velocity * Time.fixedDeltaTime); 
-        } 
-        else 
-        { 
-            RigidbodyComponent.velocity = Velocity; 
+            get
+            {
+                return rigidbodyComponent.velocity;
+            } 
+            set
+            {
+                velocity = value;
+            }
         }
-    }
     
-    public void InitializeObject(float Speed, bool Gravity, Vector2 ProjectileDirection, GameObject ProjectileHomingTarget)
-    {
-        Direction = ProjectileDirection;
-        if(Speed > 0f)
+        [SerializeField] private GameObject HomingTarget;
+        private float movementSpeed;
+        private Vector2 velocity;
+        private Rigidbody2D rigidbodyComponent;
+        private Vector2 movementDirection;
+
+        void Awake()
         {
-            CurrentMovementSpeed = Speed;
-            HorizontalSpeed = Speed;
-            VerticalSpeed = Speed;
+            rigidbodyComponent = GetComponent<Rigidbody2D>();
+            movementSpeed = initialSpeed;
         }
-        homingTarget = ProjectileHomingTarget;
-        this.Gravity = Gravity;
-        // Disable projectile gravity
-        if(!this.Gravity) { GetComponent<Rigidbody2D>().gravityScale = 0f; }
-        OnBeginProjectile();
-    }
 
-    private void ApplyAcceleration(ref float Speed)
-    {
-        Speed += Acceleration * MovementDirection.x * Time.fixedDeltaTime;
-    }
+        void Start()
+        {
+            movementDirection = direction;
+            velocity = initialSpeed * movementDirection;
+            
+            if(impulse)
+                rigidbodyComponent.AddForce(velocity, ForceMode2D.Impulse);
+        }
 
-    private void ApplyAcceleration(ref Vector2 Velocity)
-    {
-        Velocity += Acceleration * MovementDirection * Time.fixedDeltaTime;
-    }
+        void FixedUpdate()
+        {
+            if (homingTarget != null)
+                movementDirection = Math.GetUnitDirectionVector(transform.position, HomingTarget.transform.position);
+            
+            if (!rigidbodyComponent.isKinematic)
+            {
+                float speed = initialSpeed;
+                if(!impulse)
+                {
+                    speed = acceleration > 0f? velocity.magnitude : initialSpeed;
+                    velocity = speed * movementDirection;
+                }
+                
+                if(movementDirection.y == 0f || impulse)
+                    // Apply rigidbody gravity
+                    velocity.y = rigidbodyComponent.velocity.y;
+                
+                // Accelerate towards max speed.
+                velocity.x += acceleration * movementDirection.x * Time.fixedDeltaTime;
 
-  }
+                // Keep velocity within limits.
+                velocity.x = Mathf.Clamp(velocity.x, maxSpeed * -1, maxSpeed);
+                velocity.y = Mathf.Clamp(velocity.y, maxSpeed * -1, maxSpeed);
+                rigidbodyComponent.velocity = velocity;
+            }
+            else
+            {
+                Debug.Log(velocity);
+                if(velocity.magnitude == 0f || homingTarget)
+                    velocity = initialSpeed * movementDirection;
+                velocity += acceleration * movementDirection * Time.fixedDeltaTime;
+                // Keep velocity within limits.
+                velocity.x = Mathf.Clamp(velocity.x, maxSpeed * -1, maxSpeed);
+                velocity.y = Mathf.Clamp(velocity.y, maxSpeed * -1, maxSpeed);
+                rigidbodyComponent.MovePosition((Vector2) transform.position + velocity * Time.fixedDeltaTime);
+            }
+        }
+
+        public void InitializeObject(Vector2 ProjectileDirection, GameObject ProjectileHomingTarget)
+        {
+            direction = ProjectileDirection;
+            homingTarget = ProjectileHomingTarget;
+        }
+    }
 }
 
