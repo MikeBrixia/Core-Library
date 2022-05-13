@@ -1,0 +1,23 @@
+Button:hover {
+    background-color: rgb(56, 56, 56);
+    border-left-color: rgb(255, 255, 255);
+    border-right-color: rgb(255, 255, 255);
+    border-top-color: rgb(255, 255, 255);
+    border-bottom-color: rgb(255, 255, 255);
+}
+
+Button:active {
+    background-color: rgba(0, 0, 0, 255);
+    border-left-color: rgba(0, 0, 0, 0);
+    border-right-color: rgba(0, 0, 0, 0);
+    border-top-color: rgba(0, 0, 0, 0);
+    border-bottom-color: rgba(0, 0, 0, 0);
+}
+
+.button-red {
+    background-color: rgba(183, 27, 27, 255);
+    border-left-color: rgba(255, 56, 56, 255);
+    border-right-color: rgba(255, 56, 56, 255);
+    border-top-color: rgba(255, 56, 56, 255);
+    border-bottom-color: rgba(255, 56, 56, 255);
+}

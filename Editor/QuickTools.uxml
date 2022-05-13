@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/Editor/QuickTools.uss?fileID=7433441132597879392&amp;guid=3a23c9434661c774691628e33eed9467&amp;type=3#QuickTools" />
+    <ui:VisualElement style="align-items: center;">
+        <ui:Button text="yeetus deletus" display-tooltip-when-elided="true" tooltip="Deletes the save file." name="save-delete-button" class="button-red" style="width: 100px; display: none;" />
+        <ui:Button text="Open PDP" display-tooltip-when-elided="true" name="open-persistent-datapath-button" tooltip="Launch file manager, on Application.PersistentDatapath" />
+    </ui:VisualElement>
+</ui:UXML>
