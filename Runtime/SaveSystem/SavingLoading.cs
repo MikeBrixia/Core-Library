@@ -50,7 +50,12 @@ public static class SavingLoading
         }
         return default(T);
     }
-
+    
+    ///<summary>
+    /// Load data saved at specified path.
+    ///</summary>
+    ///<param name="filepath"> The location on disk of the save</param>
+    ///<param name="dataType"> The type of the object to load</param>
     public static object LoadSave(string filepath, Type dataType)
     {
         StreamReader reader = new StreamReader(filepath);
