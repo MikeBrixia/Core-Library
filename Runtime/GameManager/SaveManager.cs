@@ -89,30 +89,26 @@ namespace Core
         {
             // Should we use game path to save or a developer defined path?
             filepath = filepath == "Default" ? gameFilepath : filepath + "/" + saveName + ".json";
+            
             // Update registry
             if(saveRegistry.ContainsKey(saveName))
                 saveRegistry[saveName] = filepath;
             else
                // Add the new to save to the registry.
                saveRegistry.Add(saveName, filepath);
-            // Save data.
-            string jsonData = JsonUtility.ToJson(obj);
-            StreamWriter writer = new StreamWriter(filepath);
-            writer.Write(jsonData);
-            writer.Close();
             
-            Debug.Log(filepath);
+            // Save data.
+            SavingLoading.Save(obj, filepath);
+            
             // Save the registry.
             SaveRegistry();
         }
-
+        
         private void SaveRegistry()
         {
-            SerializedRegistry registry = SerializeRegistry();
-            string jsonRegistry = JsonUtility.ToJson(registry);
-            StreamWriter writer = new StreamWriter(registryFilepath);
-            writer.Write(jsonRegistry);
-            writer.Close();
+            SerializedDictionary<string, string> registry = new SerializedDictionary<string, string>();
+            registry.Serialize(saveRegistry);
+            SavingLoading.Save(registry, registryFilepath);
         }
         
         private Dictionary<string, string> LoadRegistry()
@@ -122,8 +118,8 @@ namespace Core
                 StreamReader reader = new StreamReader(registryFilepath);
                 string jsonRegistry = reader.ReadToEnd();
                 reader.Close();
-                SerializedRegistry serializedRegistry = JsonUtility.FromJson<SerializedRegistry>(jsonRegistry);
-                return DeserializeDictionary(serializedRegistry);
+                SerializedDictionary<string, string> serializedRegistry = JsonUtility.FromJson<SerializedDictionary<string, string>>(jsonRegistry);
+                return serializedRegistry.Deserialize();
             }
             return new Dictionary<string, string>();
         }
@@ -136,12 +132,7 @@ namespace Core
         {
             string filepath = null;
             saveRegistry.TryGetValue(saveName, out filepath);
-            if (File.Exists(filepath))
-            {
-                saveRegistry.Remove(saveName);
-                File.Delete(filepath);
-            }
-
+            SavingLoading.DeleteSave(filepath);
             // Save modified registry.
             SaveRegistry();
         }
@@ -155,15 +146,8 @@ namespace Core
             string filepath = null;
             // Search the save registry for the filepath.
             bool valueFound = saveRegistry.TryGetValue(saveName, out filepath);
-            if (valueFound && File.Exists(filepath))
-            {
-                // Load data
-                StreamReader reader = new StreamReader(filepath);
-                string jsonData = reader.ReadToEnd();
-                reader.Close();
-                T obj = JsonUtility.FromJson<T>(jsonData);
-                return obj;
-            }
+            if (valueFound)
+                return SavingLoading.LoadSave<T>(filepath);
             return default(T);
         }
         
@@ -177,48 +161,8 @@ namespace Core
             string filepath = null;
             bool valueFound = saveRegistry.TryGetValue(saveName, out filepath);
             if (valueFound)
-            {
-                StreamReader reader = new StreamReader(filepath);
-                string jsonData = reader.ReadToEnd();
-                return JsonUtility.FromJson(jsonData, dataType);
-            }
+                return SavingLoading.LoadSave(saveName, dataType);
             return null;
-        }
-        
-        ///<summary>
-        /// Helper method which serializes the registry.
-        ///</summary>
-        private SerializedRegistry SerializeRegistry()
-        {
-            List<string> keys = new List<string>();
-            List<string> values = new List<string>();
-            foreach(KeyValuePair<string, string> pair in saveRegistry)
-            {
-                keys.Add(pair.Key);
-                values.Add(pair.Value);
-            }
-            SerializedRegistry registryData = new SerializedRegistry(keys, values);
-            return registryData;
-        }
-
-        private Dictionary<string, string> DeserializeDictionary(SerializedRegistry registry)
-        {
-            Dictionary<string, string> newRegistry = new Dictionary<string, string>();
-            for(int i = 0; i <= registry.keys.Count - 1; i++)
-                newRegistry.Add(registry.keys[i], registry.values[i]);
-            return newRegistry;
-        }
-    }
-
-    class SerializedRegistry
-    {
-        public List<string> keys;
-        public List<string> values;
-
-        public SerializedRegistry(List<string> keys, List<string> values)
-        {
-            this.keys = keys;
-            this.values = values;
         }
     }
 }
