@@ -29,7 +29,7 @@ namespace Core
         public Dictionary<TKey, TValue> Deserialize()
         {
             Dictionary<TKey, TValue> dict = new Dictionary<TKey, TValue>();
-            for (int i = 0; i < keys.Count - 1; i++)
+            for (int i = 0; i < keys.Count; i++)
                 dict.TryAdd(keys[i], values[i]);
             return dict;
         }

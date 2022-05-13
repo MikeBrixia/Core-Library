@@ -61,7 +61,7 @@ namespace Core
         {
             get
             {
-                return Application.persistentDataPath + "/save.json";
+                return Application.persistentDataPath;
             }
         }
 
@@ -87,8 +87,9 @@ namespace Core
         ///<param name="filepath"> The filepath where the data it's going to be stored, default is gameFilepath </param>
         public void SaveGame(object obj, string saveName, string filepath = "Default")
         {
+            string saveRelativePath = "/" + saveName + ".json";
             // Should we use game path to save or a developer defined path?
-            filepath = filepath == "Default" ? gameFilepath : filepath + "/" + saveName + ".json";
+            filepath = filepath == "Default" ? gameFilepath + saveRelativePath: filepath + saveRelativePath;
             
             // Update registry
             if(saveRegistry.ContainsKey(saveName))
