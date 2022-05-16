@@ -94,7 +94,6 @@ namespace Core
             }
             else
             {
-                Debug.Log(velocity);
                 if(velocity.magnitude == 0f || homingTarget)
                     velocity = initialSpeed * movementDirection;
                 velocity += acceleration * movementDirection * Time.fixedDeltaTime;
