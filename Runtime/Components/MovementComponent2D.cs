@@ -77,7 +77,6 @@ namespace Core
             {
                 return state;
             }
-
             set
             {
                 if (value != state)
