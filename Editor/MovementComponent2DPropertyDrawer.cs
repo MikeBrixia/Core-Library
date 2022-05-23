@@ -16,8 +16,8 @@ namespace Core
         
         // properties
         string[] defaultProperties = {"groundCheckDistance", "groundLayer", "simulateFriction", "rotationFollowMovementDirection"};
-        string[] walkingProperties = {"walkingSpeed", "maxWalkingSpeed", "jumpSpeed", "slopeMaxWalkableDegree", 
-                                              "groundAcceleration"};
+        string[] walkingProperties = {"walkingSpeed", "maxWalkingSpeed", "jumpSpeed", 
+                                        "groundAcceleration"};
         string[] crouchedProperties = {"crouchedSpeed", "crouchedMaxSpeed", "crouchedAcceleration"};
         string[] fallingProperties = {"fallingMultiplier", "airControlMultiplier", "maxJumpCount"};
         string[] flyingProperties = {"flyingSpeed", "maxFlyingSpeed", "flyingAcceleration"};

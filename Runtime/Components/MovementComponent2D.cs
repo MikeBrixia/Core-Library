@@ -26,9 +26,6 @@ namespace Core
         public float maxWalkingSpeed = 12;
         public float jumpSpeed = 10;
 
-        [Tooltip("The maximum degree of pendency, if the slope angle is greater than this than it will not be walkable")]
-        public float slopeMaxWalkableDegree = 30f;
-
         [Tooltip("Acceleration rate when the component owner is on the ground")]
         public float groundAcceleration = 1f;
 
@@ -61,7 +58,6 @@ namespace Core
         public float flyingSpeed = 5f;
         public float maxFlyingSpeed = 7f;
         public float flyingAcceleration = 1f;
-
 
         [Tooltip("When true this component will set component owner rotation to match movement direction")]
         public bool rotationFollowMovementDirection = false;
@@ -135,7 +131,8 @@ namespace Core
         {
             get
             {
-                return groundAngle <= slopeMaxWalkableDegree;
+                return !Mathf.Approximately(groundAngle, 0f) &
+                       !Mathf.Approximately(groundAngle, 180f);
             }
         }
 
@@ -271,7 +268,7 @@ namespace Core
         {
             // This is just a workaround, it should be changed in the future
             float angle = Vector3.SignedAngle(Vector3.right, direction, Vector3.right);
-            transform.root.rotation = Quaternion.Euler(0f, angle, 0f);
+            transform.rotation = Quaternion.Euler(0f, angle, 0f);
         }
 
         ///<summary>
@@ -404,17 +401,16 @@ namespace Core
         ///</summary>
         private Vector2 ComputeVelocity(float speed, Vector2 direction)
         {
-            
-            // Rotate rigidbody by movement direction
-            if (rotationFollowMovementDirection)
-                RotateByMovementDirection(direction);
-                
-            if (isGrounded)
-            {
-                // Simulate slope effects on speed
-                direction = GetSlopePerpendicular(direction);
-            }
 
+            // Rotate rigidbody by movement direction
+            if (rotationFollowMovementDirection
+               && !direction.Equals(Vector2.zero))
+               RotateByMovementDirection(direction);
+
+            // Simulate slope effects on speed
+            if (isGrounded)
+                direction = GetSlopePerpendicular(direction);
+               
             Vector2 vel = velocity;
             // Calculate velocity
             if (!simulateFriction)
@@ -449,8 +445,9 @@ namespace Core
             }
             else
             {
-                if (isGrounded & !isFlatGround
-                   && !isGroundRightAngle)
+                if (isGrounded & !isGroundRightAngle
+                   & !direction.Equals(Vector2.right)
+                   & !direction.Equals(Vector2.left))
                 {
                     vel.y = 0f;
                     rigidbodyComponent.isKinematic = true;
@@ -513,24 +510,18 @@ namespace Core
             // Invert direction to be clockwise, and align it with player input.
             slopeDirection *= -1;
             slopeDirection *= movementDirection.x;
+            
             // Calculate angle only when input direction is valid, otherwise use last frame angle
-            groundAngle = movementDirection.x == 0f ? groundAngle : Vector2.Angle(transform.right, slopeDirection);
-
-            //Debug.DrawRay(transform.position, transform.right, Color.red);
-            //Debug.DrawRay(transform.position, slopeDirection, Color.green);
+            groundAngle = movementDirection.x == 0f ? groundAngle : Vector2.Angle(transform.up, slopeDirection);
+            
+            Debug.DrawRay(transform.position, transform.up, Color.red);
+            Debug.DrawRay(transform.position, slopeDirection, Color.green);
 
             // If the ground is not walkable due to slope pendency nullify horizontal movement
             if (!isWalkable)
-                // Disable movement in the direction of the slope is not walkable.
-                // Sweep test should help avoiding movement paralysis when trying to move in the opposite direction from the slope
-                slopeDirection = SlopeSweepTest(slopeDirection) || isGroundRightAngle ? movementDirection : Vector2.zero;
+                return movementDirection;
+            
             return slopeDirection;
-        }
-
-        private bool SlopeSweepTest(Vector2 slopeDirection)
-        {
-            RaycastHit2D sweepResult = Physics2D.Raycast(transform.position, slopeDirection, rigidbodyComponent.velocity.magnitude, groundLayer);
-            return sweepResult.collider != null;
         }
 
         ///<summary>
