@@ -188,6 +188,7 @@ namespace Core
         private float maxMovementSpeed;
         private float acceleration;
         private float defaultGravityScale;
+        
         ///<summary>
         /// the pendency of the ground in degrees
         ///</summary>
@@ -268,9 +269,9 @@ namespace Core
         ///</summary>
         private void RotateByMovementDirection(Vector2 direction)
         {
-            Vector2 forward = transform.TransformDirection(Vector2.right);
-            float angle = Vector3.SignedAngle(forward, direction, Vector3.forward);
-            transform.Rotate(Vector3.forward, angle);
+            // This is just a workaround, it should be changed in the future
+            float angle = Vector3.SignedAngle(Vector3.right, direction, Vector3.right);
+            transform.root.rotation = Quaternion.Euler(0f, angle, 0f);
         }
 
         ///<summary>
@@ -403,10 +404,11 @@ namespace Core
         ///</summary>
         private Vector2 ComputeVelocity(float speed, Vector2 direction)
         {
+            
             // Rotate rigidbody by movement direction
             if (rotationFollowMovementDirection)
                 RotateByMovementDirection(direction);
-
+                
             if (isGrounded)
             {
                 // Simulate slope effects on speed
