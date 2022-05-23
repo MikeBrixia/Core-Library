@@ -16,13 +16,13 @@ namespace Core
         
         // properties
         string[] defaultProperties = {"groundCheckDistance", "groundLayer", "simulateFriction", "rotationFollowMovementDirection"};
-        string[] walkingProperties = {"walkingSpeed", "maxWalkingSpeed", "jumpSpeed", 
+        string[] walkingProperties = {"walkingSpeed", "maxWalkingSpeed", 
                                         "groundAcceleration"};
         string[] crouchedProperties = {"crouchedSpeed", "crouchedMaxSpeed", "crouchedAcceleration"};
-        string[] fallingProperties = {"fallingMultiplier", "airControlMultiplier", "maxJumpCount"};
+        string[] fallingProperties = {"jumpSpeed", "fallingMultiplier", "airControlMultiplier", "maxJumpCount"};
         string[] flyingProperties = {"flyingSpeed", "maxFlyingSpeed", "flyingAcceleration"};
         string[] swimmingProperties = {"swimmingSpeed", "maxSwimmingSpeed", "swimmingAcceleration"};
-        string[] eventProperties = {"landedEvents", "jumpedEvents", "onCrouched"};
+        string[] eventProperties = {"landedEvents", "jumpedEvents","onFalling" ,"onCrouched"};
 
         public override void OnInspectorGUI()
         {

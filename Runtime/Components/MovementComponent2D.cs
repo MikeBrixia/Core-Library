@@ -66,6 +66,7 @@ namespace Core
         [SerializeField] private UnityEvent landedEvents;
         [SerializeField] private UnityEvent jumpedEvents;
         [SerializeField] private UnityEvent onCrouched;
+        [SerializeField] private UnityEvent onFalling;
 
         ///<summary>
         /// the current movement state of this component
@@ -373,6 +374,7 @@ namespace Core
                     maxMovementSpeed = maxWalkingSpeed;
                     rigidbodyComponent.gravityScale = fallingMultiplier;
                     acceleration = 0f;
+                    onFalling.Invoke();
                     break;
                 case EMovementState.Jumping:
                     movementSpeed = walkingSpeed;
@@ -424,7 +426,9 @@ namespace Core
 
             // After computing everything, clamp velocity between min and max movement speed
             vel.x = Mathf.Clamp(vel.x, maxMovementSpeed * -1, maxMovementSpeed);
-            vel.y = Mathf.Clamp(vel.y, maxMovementSpeed * -1, maxMovementSpeed);
+            // Clamp Y velocity only when swimming or flying
+            if(movementState == EMovementState.Flying || movementState == EMovementState.Flying)
+                vel.y = Mathf.Clamp(vel.y, maxMovementSpeed * -1, maxMovementSpeed);
             return vel;
         }
 
