@@ -38,6 +38,9 @@ namespace Core
         [Tooltip("Scale gravity when the component owner is falling down by a given amount. N.B. this only works while falling, " +
                  "if you want to change the actual default gravity scale change the rigidbody gravity scale instead")]
         public float fallingMultiplier = 2.5f;
+        
+        [Tooltip("If true body Y velocity will be kept within Max Speed limits")]
+        public bool limitFallingVelocity = false;
 
         [Range(0, 10)]
         [Tooltip("The greater this value, more control the component owner will have while in air." +
@@ -47,7 +50,7 @@ namespace Core
         [Tooltip("The maximum number of jumps the component owner can make. " +
                  "N.B. if set to 1 the component owner will only be able to jump while walking on the ground")]
         public int maxJumpCount = 1;
-
+        
 
         public float swimmingSpeed = 5;
         public float maxSwimmingSpeed = 7f;
@@ -426,7 +429,8 @@ namespace Core
             // After computing everything, clamp velocity between min and max movement speed
             vel.x = Mathf.Clamp(vel.x, maxMovementSpeed * -1, maxMovementSpeed);
             // Clamp Y velocity only when swimming or flying
-            if(movementState == EMovementState.Flying || movementState == EMovementState.Flying)
+            if(movementState == EMovementState.Flying || movementState == EMovementState.Flying
+               || limitFallingVelocity)
                 vel.y = Mathf.Clamp(vel.y, maxMovementSpeed * -1, maxMovementSpeed);
             return vel;
         }
