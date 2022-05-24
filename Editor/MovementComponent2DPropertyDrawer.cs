@@ -19,7 +19,8 @@ namespace Core
         string[] walkingProperties = {"walkingSpeed", "maxWalkingSpeed", 
                                         "groundAcceleration"};
         string[] crouchedProperties = {"crouchedSpeed", "crouchedMaxSpeed", "crouchedAcceleration"};
-        string[] fallingProperties = {"jumpSpeed", "fallingMultiplier", "limitFallingVelocity", "airControlMultiplier", "maxJumpCount"};
+        string[] fallingProperties = {"jumpSpeed", "maxJumpingSpeed", "maxFallingSpeed", "fallingMultiplier", 
+                                      "limitFallingVelocity", "airControlMultiplier", "maxJumpCount"};
         string[] flyingProperties = {"flyingSpeed", "maxFlyingSpeed", "flyingAcceleration"};
         string[] swimmingProperties = {"swimmingSpeed", "maxSwimmingSpeed", "swimmingAcceleration"};
         string[] eventProperties = {"landedEvents", "jumpedEvents","onFalling" ,"onCrouched"};

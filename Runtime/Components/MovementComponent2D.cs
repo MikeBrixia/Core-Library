@@ -33,6 +33,11 @@ namespace Core
         public float crouchedMaxSpeed = 6f;
         public float crouchedAcceleration = 0f;
 
+        [Tooltip("The max Y speed this body can reach when falling")]
+        public float maxFallingSpeed = 30f;
+        
+        [Tooltip("The max Y jumping speed this body can reach")]
+        public float maxJumpingSpeed = 30f;
 
         [Range(0, 100)]
         [Tooltip("Scale gravity when the component owner is falling down by a given amount. N.B. this only works while falling, " +
@@ -373,14 +378,14 @@ namespace Core
                 // Update Falling properties
                 case EMovementState.Falling:
                     movementSpeed = walkingSpeed;
-                    maxMovementSpeed = maxWalkingSpeed;
+                    maxMovementSpeed = maxFallingSpeed;
                     rigidbodyComponent.gravityScale = fallingMultiplier;
                     acceleration = 0f;
                     onFalling.Invoke();
                     break;
                 case EMovementState.Jumping:
                     movementSpeed = walkingSpeed;
-                    maxMovementSpeed = maxWalkingSpeed;
+                    maxMovementSpeed = maxJumpingSpeed;
                     acceleration = 0f;
                     rigidbodyComponent.gravityScale = defaultGravityScale;
                     break;
@@ -428,10 +433,8 @@ namespace Core
 
             // After computing everything, clamp velocity between min and max movement speed
             vel.x = Mathf.Clamp(vel.x, maxMovementSpeed * -1, maxMovementSpeed);
-            // Clamp Y velocity only when swimming or flying
-            if(movementState == EMovementState.Flying || movementState == EMovementState.Flying
-               || limitFallingVelocity)
-                vel.y = Mathf.Clamp(vel.y, maxMovementSpeed * -1, maxMovementSpeed);
+            // Limit Y velocity.
+            vel.y = Mathf.Clamp(vel.y, maxMovementSpeed * -1, maxMovementSpeed);
             return vel;
         }
 
