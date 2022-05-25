@@ -1,3 +1,14 @@
 {
-	"name": "com.gameplay.CoreLibrary.Runtime"
+    "name": "com.gameplay.CoreLibrary.Runtime",
+    "rootNamespace": "",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
