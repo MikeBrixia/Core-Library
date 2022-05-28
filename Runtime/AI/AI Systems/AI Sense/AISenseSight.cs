@@ -15,36 +15,34 @@ namespace Core.AI
         ///<summary>
         /// The targets which can be sensed
         ///</summary>
-        public List<string> targetsTags;
-
-        ///<summary
-        /// The priority targets of this sense
-        ///</summary>
-        public string targetPriorityTag;
+        public LayerMask targets;
+        
+        public LayerMask priority;
 
         private SenseResult senseResult = new SenseResult();
-        
         private float currentTime = 0f;
-
+        
         public override SenseResult OnSenseUpdate(float deltaTime)
         {
-            Collider2D[] colliders = Physics2D.OverlapCircleAll(owner.transform.position, radius);
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(owner.transform.position, radius, targets);
             foreach (Collider2D collider in colliders)
             {
                 if (IsStimuliSource(collider.gameObject))
                 {
+                    LayerMask ownerLayer = LayerMask.GetMask(LayerMask.LayerToName(owner.gameObject.layer));
                     Vector2 targetDirection = Math.GetUnitDirectionVector(owner.transform.position, collider.transform.position);
-                    RaycastHit2D result = Physics2D.Raycast(owner.transform.position, targetDirection, radius);
+                    RaycastHit2D result = Physics2D.Raycast(owner.transform.position, targetDirection, radius, ~ownerLayer);
                     if(result.collider != null 
-                       & targetsTags.Contains(result.collider.tag)
+                       & targets == (targets | (1<<result.collider.gameObject.layer))
                        & Vector2.Angle(owner.transform.right, targetDirection) <= visionAngle)
                     {
                         senseResult.successfullySensed = true;
                         senseResult.sensedObject = result.collider.gameObject;
                         senseResult.senseID = ID; 
                         currentTime = 0f;
+                        LayerMask colliderLayer = LayerMask.GetMask(LayerMask.LayerToName(result.collider.gameObject.layer));
                         // If the sensed target is a priority interrupt sight evaluation and focus on the target
-                        if(result.collider.gameObject.tag == targetPriorityTag)
+                        if(colliderLayer == priority)
                             break; 
                     }
                     else
