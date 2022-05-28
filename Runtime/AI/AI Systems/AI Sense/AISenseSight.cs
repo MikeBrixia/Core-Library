@@ -17,6 +17,11 @@ namespace Core.AI
         ///</summary>
         public LayerMask targets;
         
+        ///<summary>
+        /// The targets which we want to ignore.
+        ///</summary>
+        public LayerMask targetsToIgnore;
+        
         public LayerMask priority;
 
         private SenseResult senseResult = new SenseResult();
@@ -31,7 +36,7 @@ namespace Core.AI
                 {
                     LayerMask ownerLayer = LayerMask.GetMask(LayerMask.LayerToName(owner.gameObject.layer));
                     Vector2 targetDirection = Math.GetUnitDirectionVector(owner.transform.position, collider.transform.position);
-                    RaycastHit2D result = Physics2D.Raycast(owner.transform.position, targetDirection, radius, ~ownerLayer);
+                    RaycastHit2D result = Physics2D.Raycast(owner.transform.position, targetDirection, radius, ~targetsToIgnore);
                     if(result.collider != null 
                        & targets == (targets.value | (1<<result.collider.gameObject.layer))
                        & Vector2.Angle(owner.transform.right, targetDirection) <= visionAngle)
