@@ -41,6 +41,7 @@ namespace Core.AI
                         senseResult.successfullySensed = true;
                         senseResult.sensedObject = result.collider.gameObject;
                         senseResult.senseID = ID; 
+                        currentTime = 0f;
                         // If the sensed target is a priority interrupt sight evaluation and focus on the target
                         if(result.collider.gameObject.layer == targetPriority)
                             break; 
