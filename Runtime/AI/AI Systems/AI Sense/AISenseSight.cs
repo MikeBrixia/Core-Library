@@ -15,12 +15,12 @@ namespace Core.AI
         ///<summary>
         /// The targets which can be sensed
         ///</summary>
-        public LayerMask targets;
+        public List<string> targetsTags;
 
         ///<summary
         /// The priority targets of this sense
         ///</summary>
-        public LayerMask targetPriority;
+        public string targetPriorityTag;
 
         private SenseResult senseResult = new SenseResult();
         
@@ -34,16 +34,17 @@ namespace Core.AI
                 if (IsStimuliSource(collider.gameObject))
                 {
                     Vector2 targetDirection = Math.GetUnitDirectionVector(owner.transform.position, collider.transform.position);
-                    RaycastHit2D result = Physics2D.Raycast(owner.transform.position, targetDirection, radius, targets);
+                    RaycastHit2D result = Physics2D.Raycast(owner.transform.position, targetDirection, radius);
                     if(result.collider != null 
-                       && Vector2.Angle(owner.transform.right, targetDirection) <= visionAngle)
+                       & targetsTags.Contains(result.collider.tag)
+                       & Vector2.Angle(owner.transform.right, targetDirection) <= visionAngle)
                     {
                         senseResult.successfullySensed = true;
                         senseResult.sensedObject = result.collider.gameObject;
                         senseResult.senseID = ID; 
                         currentTime = 0f;
                         // If the sensed target is a priority interrupt sight evaluation and focus on the target
-                        if(result.collider.gameObject.layer == targetPriority)
+                        if(result.collider.gameObject.tag == targetPriorityTag)
                             break; 
                     }
                     else
