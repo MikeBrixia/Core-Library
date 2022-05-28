@@ -25,8 +25,10 @@ namespace Core.AI
         public override SenseResult OnSenseUpdate(float deltaTime)
         {
             Collider2D[] colliders = Physics2D.OverlapCircleAll(owner.transform.position, radius, targets);
+            Debug.Log(colliders.Length);
             foreach (Collider2D collider in colliders)
             {
+                Debug.Log("Is stimuli source: " + IsStimuliSource(collider.gameObject));
                 if (IsStimuliSource(collider.gameObject))
                 {
                     LayerMask ownerLayer = LayerMask.GetMask(LayerMask.LayerToName(owner.gameObject.layer));
@@ -36,6 +38,7 @@ namespace Core.AI
                        & targets == (targets | (1<<result.collider.gameObject.layer))
                        & Vector2.Angle(owner.transform.right, targetDirection) <= visionAngle)
                     {
+                        Debug.Log("Sense success");
                         senseResult.successfullySensed = true;
                         senseResult.sensedObject = result.collider.gameObject;
                         senseResult.senseID = ID; 
@@ -47,6 +50,7 @@ namespace Core.AI
                     }
                     else
                     {
+                        Debug.Log("Sense failed");
                         if(senseResult.successfullySensed && currentTime > age)
                         {
                             senseResult.successfullySensed = false;
