@@ -51,6 +51,7 @@ namespace Core.AI
                         {
                             senseResult.successfullySensed = false;
                             senseResult.sensedObject = null;
+                            senseResult.senseID = ID; 
                             currentTime = 0f;
                         }
                         else
