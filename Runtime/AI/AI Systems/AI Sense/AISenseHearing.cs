@@ -14,7 +14,7 @@ namespace Core.AI
             throw new System.NotImplementedException();
         }
 
-        public override SenseResult OnSenseUpdate(GameObject sensedObject) 
+        public override SenseResult OnSenseUpdate(GameObject sensedObject, float deltaTime) 
         {
             // Calculate the distance from the object which is sensing and the sensed object
             float NoiseDistance = Vector2.Distance(owner.transform.position, sensedObject.transform.position);
@@ -28,7 +28,7 @@ namespace Core.AI
             return senseResult;
         }
 
-        public override SenseResult OnSenseUpdate()
+        public override SenseResult OnSenseUpdate(float deltaTime)
         {
             throw new System.NotImplementedException();
         }

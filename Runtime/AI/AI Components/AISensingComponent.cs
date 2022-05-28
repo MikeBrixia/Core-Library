@@ -36,6 +36,11 @@ namespace Core.AI
 
         private bool allReportBased = false;
 
+        ///<summary>
+        /// The interval at which this component is updating.
+        ///</summary>
+        private float interval = 0f;
+
         void Awake()
         {
             registeredSenses = new Dictionary<Type, AISense>();
@@ -59,6 +64,8 @@ namespace Core.AI
 
             if (!canTick && !allReportBased)
                 InvokeRepeating("SenseUpdate", 0.1f, updateInterval);
+
+            interval = canTick? Time.deltaTime : updateInterval;
         }
 
         ///<summary>
@@ -95,7 +102,7 @@ namespace Core.AI
                     // If sense is not report based update it
                     if (!sense.reportBased)
                     {
-                        SenseResult result = sense.OnSenseUpdate();
+                        SenseResult result = sense.OnSenseUpdate(interval);
                         OnSenseUpdateCallback.Invoke(result);
                     }
                 }
@@ -109,7 +116,7 @@ namespace Core.AI
         ///<param name="sense"> The sense to update</param>
         public void UpdateSense(AISense sense)
         {
-            SenseResult result = sense.OnSenseUpdate();
+            SenseResult result = sense.OnSenseUpdate(interval);
             OnSenseUpdateCallback.Invoke(result);
         }
         
@@ -121,7 +128,7 @@ namespace Core.AI
         ///<param name="instigator"> The instigator of this update</param>
         public void UpdateSense(AISense sense, GameObject instigator)
         {
-           SenseResult result = sense.OnSenseUpdate(instigator);
+           SenseResult result = sense.OnSenseUpdate(instigator, interval);
            OnSenseUpdateCallback.Invoke(result);
         }
     }

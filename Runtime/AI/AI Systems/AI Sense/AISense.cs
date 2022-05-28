@@ -38,12 +38,12 @@ namespace Core.AI
         ///<summary>
         /// Called each time this sense gets updated
         ///</summary>
-        public abstract SenseResult OnSenseUpdate();
+        public abstract SenseResult OnSenseUpdate(float deltaTime);
         
         ///<summary>
         /// Called each time this sense is updated with a report event.
         ///</summary>
-        public abstract SenseResult OnSenseUpdate(GameObject sensedObject);
+        public abstract SenseResult OnSenseUpdate(GameObject sensedObject, float deltaTime);
         
         public abstract void DrawDebugSense();
         
