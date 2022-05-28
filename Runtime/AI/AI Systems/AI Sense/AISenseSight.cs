@@ -32,7 +32,7 @@ namespace Core.AI
                     LayerMask ownerLayer = LayerMask.GetMask(LayerMask.LayerToName(owner.gameObject.layer));
                     Vector2 targetDirection = Math.GetUnitDirectionVector(owner.transform.position, collider.transform.position);
                     RaycastHit2D result = Physics2D.Raycast(owner.transform.position, targetDirection, radius, ~ownerLayer);
-                    Debug.Log(1<<result.collider.gameObject.layer);
+                    Debug.Log(LayerMask.LayerToName(1<<result.collider.gameObject.layer));
                     if(result.collider != null 
                        & targets == (targets | (1<<result.collider.gameObject.layer))
                        & Vector2.Angle(owner.transform.right, targetDirection) <= visionAngle)
