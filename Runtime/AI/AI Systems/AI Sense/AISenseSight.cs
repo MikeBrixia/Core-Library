@@ -24,6 +24,9 @@ namespace Core.AI
 
         private SenseResult senseResult = new SenseResult();
         
+        private float startTime;
+        private float currentTime;
+
         public override SenseResult OnSenseUpdate()
         {
             Collider2D[] colliders = Physics2D.OverlapCircleAll(owner.transform.position, radius);
@@ -39,14 +42,20 @@ namespace Core.AI
                         senseResult.successfullySensed = true;
                         senseResult.sensedObject = result.collider.gameObject;
                         senseResult.senseID = ID;
+                        startTime = Time.time;   
                         // If the sensed target is a priority interrupt sight evaluation and focus on the target
                         if(result.collider.gameObject.layer == targetPriority)
-                            break;     
+                            break; 
                     }
                     else
                     {
-                        senseResult.successfullySensed = false;
-                        senseResult.sensedObject = null;
+                        if(senseResult.successfullySensed && currentTime > age)
+                        {
+                            senseResult.successfullySensed = false;
+                            senseResult.sensedObject = null;
+                        }
+                        else
+                            currentTime += Time.time - startTime;
                     }
                 }
             }
