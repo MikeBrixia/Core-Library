@@ -47,11 +47,11 @@ namespace Core.AI
                     }
                     else
                     {
+                        senseResult.senseID = ID; 
                         if(senseResult.successfullySensed && currentTime > age)
                         {
                             senseResult.successfullySensed = false;
                             senseResult.sensedObject = null;
-                            senseResult.senseID = ID; 
                             currentTime = 0f;
                         }
                         else
