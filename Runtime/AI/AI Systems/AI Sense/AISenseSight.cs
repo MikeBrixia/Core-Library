@@ -57,8 +57,9 @@ namespace Core.AI
                     }
                     else
                         SenseFailed(deltaTime);
-                    
                 }
+                else
+                    SenseFailed(deltaTime);
             }
             return senseResult;
         }
