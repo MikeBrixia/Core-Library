@@ -52,11 +52,11 @@ namespace Core.AI
                                 break;
                         }
                         else
-                            SenseFailed();
+                            SenseFailed(deltaTime);
                         
                     }
                     else
-                        SenseFailed();
+                        SenseFailed(deltaTime);
                     
                 }
             }
@@ -73,7 +73,7 @@ namespace Core.AI
 
         }
 
-        private void SenseFailed()
+        private void SenseFailed(float deltaTime)
         {
             senseResult.senseID = ID;
             if (senseResult.successfullySensed && currentTime > age)
