@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Core.AI
 {
-    [CreateAssetMenu(fileName ="AI Sense Sight", menuName = "AI/Sensing/AI Sense Sight")]
+    [CreateAssetMenu(fileName = "AI Sense Sight", menuName = "AI/Sensing/AI Sense Sight")]
     public sealed class AISenseSight : AISense
     {
         ///<summary>
@@ -16,17 +16,17 @@ namespace Core.AI
         /// The targets which can be sensed
         ///</summary>
         public LayerMask targets;
-        
+
         ///<summary>
         /// The targets which we want to ignore.
         ///</summary>
         public LayerMask targetsToIgnore;
-        
+
         public LayerMask priority;
 
         private SenseResult senseResult = new SenseResult();
         private float currentTime = 0f;
-        
+
         public override SenseResult OnSenseUpdate(float deltaTime)
         {
             Collider2D[] colliders = Physics2D.OverlapCircleAll(owner.transform.position, radius, targets);
@@ -37,33 +37,27 @@ namespace Core.AI
                     LayerMask ownerLayer = LayerMask.GetMask(LayerMask.LayerToName(owner.gameObject.layer));
                     Vector2 targetDirection = Math.GetUnitDirectionVector(owner.transform.position, collider.transform.position);
                     RaycastHit2D result = Physics2D.Raycast(owner.transform.position, targetDirection, radius, ~targetsToIgnore);
-                    if(result.collider != null 
-                       & targets == (targets.value | (1<<result.collider.gameObject.layer))
-                       & Vector2.Angle(owner.transform.right, targetDirection) <= visionAngle)
+                    if (result.collider != null)
                     {
-                        senseResult.successfullySensed = true;
-                        senseResult.sensedObject = result.collider.gameObject;
-                        senseResult.senseID = ID; 
-                        currentTime = 0f;
-                        LayerMask colliderLayer = LayerMask.GetMask(LayerMask.LayerToName(result.collider.gameObject.layer));
-                        // If the sensed target is a priority interrupt sight evaluation and focus on the target
-                        if(colliderLayer == priority)
-                            break; 
-                    }
-                    else
-                    {
-                        senseResult.senseID = ID; 
-                        if(senseResult.successfullySensed && currentTime > age)
+                        if (targets == (targets.value | (1 << result.collider.gameObject.layer))
+                            && Vector2.Angle(owner.transform.right, targetDirection) <= visionAngle)
                         {
-                            senseResult.successfullySensed = false;
-                            senseResult.sensedObject = null;
+                            senseResult.successfullySensed = true;
+                            senseResult.sensedObject = result.collider.gameObject;
+                            senseResult.senseID = ID;
                             currentTime = 0f;
+                            LayerMask colliderLayer = LayerMask.GetMask(LayerMask.LayerToName(result.collider.gameObject.layer));
+                            // If the sensed target is a priority interrupt sight evaluation and focus on the target
+                            if (colliderLayer == priority)
+                                break;
                         }
                         else
-                        {
-                            currentTime += deltaTime;
-                        }
+                            SenseFailed();
+                        
                     }
+                    else
+                        SenseFailed();
+                    
                 }
             }
             return senseResult;
@@ -76,7 +70,22 @@ namespace Core.AI
 
         public override void DrawDebugSense()
         {
-            
+
+        }
+
+        private void SenseFailed()
+        {
+            senseResult.senseID = ID;
+            if (senseResult.successfullySensed && currentTime > age)
+            {
+                senseResult.successfullySensed = false;
+                senseResult.sensedObject = null;
+                currentTime = 0f;
+            }
+            else
+            {
+                currentTime += deltaTime;
+            }
         }
     }
 }
