@@ -29,7 +29,9 @@ namespace Core.AI
 
         public override SenseResult OnSenseUpdate(float deltaTime)
         {
-            Collider2D[] colliders = Physics2D.OverlapCircleAll(owner.transform.position, radius);
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(owner.transform.position, radius, targets);
+            if(colliders.Length == 0)
+                SenseFailed(deltaTime);
             foreach (Collider2D collider in colliders)
             {
                 if (IsStimuliSource(collider.gameObject))
