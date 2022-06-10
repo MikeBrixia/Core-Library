@@ -19,14 +19,13 @@ namespace Core
             }
             set
             {
+                this.HomingTarget = value;
                 // When there is no homing target use default direction.
                 if (value == null)
                 {
                     if (movementDirection.Equals(Vector2.zero))
                         movementDirection = direction;
                 }
-                else
-                    this.HomingTarget = value;
             }
         }
 
