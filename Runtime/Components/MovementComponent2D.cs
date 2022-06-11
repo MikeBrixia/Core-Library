@@ -14,8 +14,6 @@ namespace Core
     ///</summary>
     public class MovementComponent2D : MonoBehaviour
     {
-
-        [Range(0.52f, 3f)]
         public float groundCheckDistance = 0.52f;
         public LayerMask groundLayer;
         public bool simulateFriction = false;
