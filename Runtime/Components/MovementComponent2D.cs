@@ -544,6 +544,7 @@ namespace Core
         {
             groundNormal = collision.transform.up;
             RaycastHit2D hitResult = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, groundLayer);
+            Debug.Log(hitResult.collider);
             if (hitResult.collider != null)
             {
                 currentJumpCount = 0;
