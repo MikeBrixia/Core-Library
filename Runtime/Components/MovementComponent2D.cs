@@ -571,11 +571,11 @@ namespace Core
         private bool GroundCheck()
         {
             bool grounded = false;
-            bool canLand = (movementState == EMovementState.Flying
-                           && rigidbodyComponent.velocity.y.Equals(0f)) 
-                           || movementState == EMovementState.Falling;
-            Collider2D collider = Physics2D.OverlapCircle(transform.position, groundCheckRadius, groundLayer);
-            if (collider != null && canLand)
+            bool canLand = movementState == EMovementState.Flying 
+                           | movementState == EMovementState.Falling
+                           & rigidbodyComponent.velocity.y.Equals(0f);
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, groundCheckRadius, groundLayer);
+            if (colliders.Length > 0 && canLand)
             {
                 currentJumpCount = 0;
                 grounded = true;
