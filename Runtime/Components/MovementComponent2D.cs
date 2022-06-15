@@ -543,11 +543,10 @@ namespace Core
         void OnCollisionEnter2D(Collision2D collision)
         {
             groundNormal = collision.transform.up;
-            RaycastHit2D hitResult = Physics2D.Raycast(transform.position, groundNormal * -1, groundCheckDistance, groundLayer);
+            RaycastHit2D hitResult = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, groundLayer);
             if (hitResult.collider != null)
             {
                 currentJumpCount = 0;
-                Debug.Log(movementState);
                 // If the previous state was flying or walking notify
                 // that the owner has landed on the ground
                 if (movementState == EMovementState.Falling ||
