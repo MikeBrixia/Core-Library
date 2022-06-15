@@ -14,7 +14,7 @@ namespace Core
     ///</summary>
     public class MovementComponent2D : MonoBehaviour
     {
-        public float groundCheckDistance = 0.52f;
+        public float groundCheckRadius = 0.52f;
         public LayerMask groundLayer;
         public bool simulateFriction = false;
 
@@ -215,7 +215,7 @@ namespace Core
         {
             defaultGravityScale = rigidbodyComponent.gravityScale;
             OnMovementModeUpdate();
-            RaycastHit2D hitResult = Physics2D.Raycast(transform.position, groundNormal * -1, groundCheckDistance, groundLayer);
+            RaycastHit2D hitResult = Physics2D.Raycast(transform.position, groundNormal * -1, groundCheckRadius, groundLayer);
             movementState = hitResult.collider == null ? EMovementState.Falling : EMovementState.Walking;
             groundNormal = Vector2.up;
         }
@@ -573,10 +573,8 @@ namespace Core
             bool grounded = false;
             bool canLand = (movementState == EMovementState.Flying
                            && rigidbodyComponent.velocity.y.Equals(0f)) 
-                           || (movementState == EMovementState.Falling
-                           && movementState != EMovementState.Jumping);
-                           
-            Collider2D collider = Physics2D.OverlapCircle(transform.position, groundCheckDistance);
+                           || movementState == EMovementState.Falling;
+            Collider2D collider = Physics2D.OverlapCircle(transform.position, groundCheckRadius, groundLayer);
             if (collider != null && canLand)
             {
                 currentJumpCount = 0;
