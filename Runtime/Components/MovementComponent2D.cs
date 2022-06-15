@@ -547,6 +547,7 @@ namespace Core
             if (hitResult.collider != null)
             {
                 currentJumpCount = 0;
+                Debug.Log(movementState);
                 // If the previous state was flying or walking notify
                 // that the owner has landed on the ground
                 if (movementState == EMovementState.Falling ||
