@@ -15,7 +15,7 @@ namespace Core
         private bool swimmingFoldout = false;
         
         // properties
-        string[] defaultProperties = {"groundCheckDistance", "groundLayer", "simulateFriction", "rotationFollowMovementDirection"};
+        string[] defaultProperties = {"groundCheckRadius", "groundLayer", "simulateFriction", "rotationFollowMovementDirection"};
         string[] walkingProperties = {"walkingSpeed", "maxWalkingSpeed", 
                                         "groundAcceleration"};
         string[] crouchedProperties = {"crouchedSpeed", "crouchedMaxSpeed", "crouchedAcceleration"};
