@@ -408,7 +408,8 @@ namespace Core
         ///</summary>
         private Vector2 ComputeVelocity(float speed, Vector2 direction)
         {
-
+             
+            GroundCheck();
             // Rotate rigidbody by movement direction
             if (rotationFollowMovementDirection
                && !direction.Equals(Vector2.zero))
@@ -542,6 +543,8 @@ namespace Core
 
         void OnCollisionEnter2D(Collision2D collision)
         {
+            
+            /**
             groundNormal = collision.transform.up;
             RaycastHit2D hitResult = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, groundLayer);
             Debug.Log(hitResult.collider);
@@ -557,12 +560,26 @@ namespace Core
                     OnLanded();
                 }
             }
+            */
         }
-
+    
         void OnCollisionExit2D(Collision2D collision)
         {
             int colliderCount = rigidbodyComponent.OverlapCollider(new ContactFilter2D(), new List<Collider2D>());
             movementState = isGrounded && colliderCount == 0 ? EMovementState.Falling : movementState;
+        }
+
+        private bool GroundCheck()
+        {
+            Collider2D collider = Physics2D.OverlapCircle(transform.position, groundCheckDistance);
+            if(collider != null && isInAir)
+            {
+                currentJumpCount = 0;
+                movementState = EMovementState.Walking;
+                OnLanded();
+                return true;
+            }
+            return false;
         }
     }
 }
