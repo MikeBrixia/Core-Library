@@ -33,7 +33,7 @@ namespace Core
 
         [Tooltip("The max Y speed this body can reach when falling")]
         public float maxFallingSpeed = 30f;
-        
+
         [Tooltip("The max Y jumping speed this body can reach")]
         public float maxJumpingSpeed = 30f;
 
@@ -41,7 +41,7 @@ namespace Core
         [Tooltip("Scale gravity when the component owner is falling down by a given amount. N.B. this only works while falling, " +
                  "if you want to change the actual default gravity scale change the rigidbody gravity scale instead")]
         public float fallingMultiplier = 2.5f;
-        
+
         [Tooltip("If true body Y velocity will be kept within Max Speed limits")]
         public bool limitFallingVelocity = false;
 
@@ -53,7 +53,7 @@ namespace Core
         [Tooltip("The maximum number of jumps the component owner can make. " +
                  "N.B. if set to 1 the component owner will only be able to jump while walking on the ground")]
         public int maxJumpCount = 1;
-        
+
 
         public float swimmingSpeed = 5;
         public float maxSwimmingSpeed = 7f;
@@ -191,7 +191,7 @@ namespace Core
         private float maxMovementSpeed;
         private float acceleration;
         private float defaultGravityScale;
-        
+
         ///<summary>
         /// the pendency of the ground in degrees
         ///</summary>
@@ -408,17 +408,16 @@ namespace Core
         ///</summary>
         private Vector2 ComputeVelocity(float speed, Vector2 direction)
         {
-             
             GroundCheck();
             // Rotate rigidbody by movement direction
             if (rotationFollowMovementDirection
                && !direction.Equals(Vector2.zero))
-               RotateByMovementDirection(direction);
+                RotateByMovementDirection(direction);
 
             // Simulate slope effects on speed
             if (isGrounded)
                 direction = GetSlopePerpendicular(direction);
-               
+
             Vector2 vel = velocity;
             // Calculate velocity
             if (!simulateFriction)
@@ -519,17 +518,17 @@ namespace Core
             // Invert direction to be clockwise, and align it with player input.
             slopeDirection *= -1;
             slopeDirection *= movementDirection.x;
-            
+
             // Calculate angle only when input direction is valid, otherwise use last frame angle
             groundAngle = movementDirection.x == 0f ? groundAngle : Vector2.Angle(transform.up, slopeDirection);
-            
+
             Debug.DrawRay(transform.position, transform.up, Color.red);
             Debug.DrawRay(transform.position, slopeDirection, Color.green);
 
             // If the ground is not walkable due to slope pendency nullify horizontal movement
             if (!isWalkable)
                 return movementDirection;
-            
+
             return slopeDirection;
         }
 
@@ -543,7 +542,7 @@ namespace Core
 
         void OnCollisionEnter2D(Collision2D collision)
         {
-            
+
             /**
             groundNormal = collision.transform.up;
             RaycastHit2D hitResult = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, groundLayer);
@@ -562,7 +561,7 @@ namespace Core
             }
             */
         }
-    
+
         void OnCollisionExit2D(Collision2D collision)
         {
             int colliderCount = rigidbodyComponent.OverlapCollider(new ContactFilter2D(), new List<Collider2D>());
@@ -571,15 +570,21 @@ namespace Core
 
         private bool GroundCheck()
         {
+            bool grounded = false;
+            bool canLand = (movementState == EMovementState.Flying
+                           && rigidbodyComponent.velocity.y.Equals(0f)) 
+                           || (movementState == EMovementState.Falling
+                           && movementState != EMovementState.Jumping);
+                           
             Collider2D collider = Physics2D.OverlapCircle(transform.position, groundCheckDistance);
-            if(collider != null && isInAir)
+            if (collider != null && canLand)
             {
                 currentJumpCount = 0;
+                grounded = true;
                 movementState = EMovementState.Walking;
                 OnLanded();
-                return true;
             }
-            return false;
+            return grounded;
         }
     }
 }
