@@ -7,12 +7,6 @@ namespace Core
 {
     public sealed partial class GameManager : MonoBehaviour
     {
-
-        ///<summary>
-        /// Current controller used by the player
-        ///</summary>
-        public PlayerController playerController { get; set; }
-
         ///<summary>
         /// Current player game object controlled by the player
         ///</summary>
@@ -22,17 +16,20 @@ namespace Core
         /// True if the game is finished, false otherwise
         ///</summary>
         public bool isGameFinished { get; set; }
-
-        /// <summary>
-        /// Global state of the game
-        /// </summary>
-        public static GameStates gameState = GameStates.Normal;
         
+        ///<summary>
+        /// True if the game is currently paused, false otherwise.
+        ///</summary>
+        public bool isPaused { get; private set; }
+
+        public delegate void OnGameStateChange(bool paused);
+        
+        ///<summary>
+        /// Callback for when the game state changes(game gets paused or unpaused)
+        ///</summary>
+        public OnGameStateChange onGameStateChange;
+
 		private static GameManager gameManagerInstance = null;
-
-        public enum GameStates { Normal, Paused, Inventory, Map, Loading }
-
-        public static bool isPaused { get { return gameState == GameStates.Paused; } }
         
         ///<summary>
         /// Global Game Manager instance.
@@ -70,5 +67,17 @@ namespace Core
 			if (FindObjectsOfType<GameManager>(true).Length > 1)
                 DestroyImmediate(this);
 		}
+        
+        public void PauseGame()
+        {
+            isPaused = true;
+            onGameStateChange?.Invoke(true);
+        }
+
+        public void UnpauseGame()
+        {
+            isPaused = false;
+            onGameStateChange?.Invoke(false);
+        }
     }
 }

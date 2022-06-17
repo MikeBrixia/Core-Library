@@ -7,22 +7,28 @@ namespace Core.Gameplay
 {
    public static class GameplayLib
    {
+
       ///<summary>
-      /// Apply damage to a given component
+      /// Apply damage to a given object
       ///</summary>
-      public static bool ApplyDamage(float Damage, MonoBehaviour DamagedObject, GameObject DamageCauser, IDamageType DamageType = null)
+      public static void ApplyDamage(GameObject damagedObject, DamageProperties damageProperties)
       {
-        IDamageable DamageableObject = DamagedObject as IDamageable;
-        if(DamageableObject != null)
-        {
-            if(DamageableObject.IsCurrentlyDamageable())
-            {
-                DamageableObject.OnReceiveAnyDamage(Damage, DamageCauser, DamageType);
-                return true;
-            }
-        }
-        return false;
+        if(damagedObject != null)
+          damagedObject.BroadcastMessage("OnReceiveAnyDamage", damageProperties, SendMessageOptions.DontRequireReceiver);
       }
+      
+      ///<summary>
+      /// Apply damage to a given object
+      ///</summary>
+      public static void ApplyDamage(float damage, GameObject damagedObject, GameObject damageCauser, IDamageType damageType)
+      {
+        if(damagedObject != null)
+        {
+          DamageProperties damageProperties = new DamageProperties(damage, damageCauser, damageType);
+          damagedObject.BroadcastMessage("OnReceiveAnyDamage", damageProperties, SendMessageOptions.DontRequireReceiver);
+        }
+      }
+
    }
 }
 

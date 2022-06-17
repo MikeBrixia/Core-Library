@@ -540,28 +540,6 @@ namespace Core
             landedEvents.Invoke();
         }
 
-        void OnCollisionEnter2D(Collision2D collision)
-        {
-
-            /**
-            groundNormal = collision.transform.up;
-            RaycastHit2D hitResult = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, groundLayer);
-            Debug.Log(hitResult.collider);
-            if (hitResult.collider != null)
-            {
-                currentJumpCount = 0;
-                // If the previous state was flying or walking notify
-                // that the owner has landed on the ground
-                if (movementState == EMovementState.Falling ||
-                   movementState == EMovementState.Flying)
-                {
-                    movementState = EMovementState.Walking;
-                    OnLanded();
-                }
-            }
-            */
-        }
-
         void OnCollisionExit2D(Collision2D collision)
         {
             int colliderCount = rigidbodyComponent.OverlapCollider(new ContactFilter2D(), new List<Collider2D>());
