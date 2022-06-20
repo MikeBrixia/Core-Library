@@ -8,7 +8,6 @@ namespace Core
 {
    public sealed partial class LevelManager : MonoBehaviour
    {
-
       ///<summary>
       /// Get the current spawn point.
       ///</summary>

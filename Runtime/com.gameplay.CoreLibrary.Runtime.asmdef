@@ -1,7 +1,9 @@
 {
     "name": "com.gameplay.CoreLibrary.Runtime",
     "rootNamespace": "",
-    "references": [],
+    "references": [
+        "GUID:d49f26839f7e07149a3a3d913ab263ef"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

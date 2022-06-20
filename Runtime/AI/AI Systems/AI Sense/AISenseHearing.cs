@@ -28,9 +28,9 @@ namespace Core.AI
             return senseResult;
         }
 
-        public override SenseResult OnSenseUpdate(float deltaTime)
+        public override Collider2D[] SenseTargets()
         {
-            throw new System.NotImplementedException();
+            return null;
         }
     }
 }

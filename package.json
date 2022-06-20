@@ -4,11 +4,16 @@
   "version": "0.0.1",
   "description": "Library which makes developing game prototypes faster",
   "displayName": "Core Library",
-  "unity": "2021.2",
+  "unity": "2021.1",
   "source": "CoreLibrary",
-  "author": {
+  "author": 
+  {
     "name": "Michael Guida",
     "email": "michael.guida@outlook.com"
+  },
+  "dependencies": 
+  {
+     "com.ai.behavior-tree": "0.0.1"
   },
   "type": "library"
 }

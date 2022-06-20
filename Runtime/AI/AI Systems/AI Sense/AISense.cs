@@ -35,11 +35,8 @@ namespace Core.AI
         ///</summary>
         protected GameObject owner;
         
-        ///<summary>
-        /// Called each time this sense gets updated
-        ///</summary>
-        public abstract SenseResult OnSenseUpdate(float deltaTime);
-        
+        public abstract Collider2D[] SenseTargets();
+
         ///<summary>
         /// Called each time this sense is updated with a report event.
         ///</summary>
@@ -60,7 +57,7 @@ namespace Core.AI
         {
             this.owner = owner;
         }
-        
+
         ///<summary>
         /// Check if the sensed object is a stimuli source.
         /// Check this condition when you want your sense to only

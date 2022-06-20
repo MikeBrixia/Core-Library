@@ -8,7 +8,6 @@ namespace Core.AI
 {
     public class AISensingComponent : MonoBehaviour
     {
-
         [SerializeField] private List<AISense> senses;
 
         ///<summary>
@@ -101,23 +100,24 @@ namespace Core.AI
                 {
                     // If sense is not report based update it
                     if (!sense.reportBased)
-                    {
-                        SenseResult result = sense.OnSenseUpdate(interval);
-                        OnSenseUpdateCallback.Invoke(result);
-                    }
+                        UpdateSense(sense);
                 }
             }
         }
 
         ///<summary>
         /// Perform an update of the given sense. This is the
-        /// standard version
+        /// standard version.
         ///</summary>
         ///<param name="sense"> The sense to update</param>
         public void UpdateSense(AISense sense)
         {
-            SenseResult result = sense.OnSenseUpdate(interval);
-            OnSenseUpdateCallback.Invoke(result);
+            Collider2D[] sensedObjects = sense.SenseTargets();
+            foreach(Collider2D target in sensedObjects)
+            {
+                SenseResult result = sense.OnSenseUpdate(target.gameObject, interval);
+                OnSenseUpdateCallback.Invoke(result);
+            }
         }
         
         ///<summary>
