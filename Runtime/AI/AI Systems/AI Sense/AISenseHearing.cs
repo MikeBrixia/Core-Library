@@ -7,6 +7,11 @@ namespace Core.AI
     [CreateAssetMenu(fileName ="AI Sense Hearing", menuName = "AI/Sensing/AI Sense Hearing")]
     public class AISenseHearing : AISense
     {
+        ///<summary>
+        /// The targets which can be sensed.
+        ///</summary>
+        public LayerMask targets;
+        
         private SenseResult senseResult = new SenseResult();
 
         public override void DrawDebugSense()
@@ -30,7 +35,8 @@ namespace Core.AI
 
         public override Collider2D[] SenseTargets()
         {
-            return null;
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(owner.transform.position, radius, targets);
+            return colliders;
         }
     }
 }
