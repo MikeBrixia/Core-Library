@@ -8,11 +8,11 @@ namespace Core
     {
         public int width { get; private set; }
         public int height { get; private set; }
-        public float cellSize { get; private set; }
+        public Vector2 cellSize { get; private set; }
         public List<Vector2> gridPoints { get; private set; }
-        private Vector2 origin;
+        public Vector2 origin { get; private set; }
 
-        public CustomGrid(int width, int height, float cellSize, Vector2 origin)
+        public CustomGrid(int width, int height, Vector2 cellSize, Vector2 origin)
         {
             // Initialize grid
             this.width = width;
@@ -29,16 +29,16 @@ namespace Core
             return new Vector2(x, y) * cellSize + origin;
         }
 
-        public void DrawGrid()
+        public void DrawGrid(Color gridColor)
         {
             for (int x = 0; x < width; x++)
                 for (int y = 0; y < height; y++)
                 {
-                    Debug.DrawLine(GetWorldPosition(x, y), GetWorldPosition(x, y + 1), Color.black);
-                    Debug.DrawLine(GetWorldPosition(x, y), GetWorldPosition(x + 1, y), Color.black);
+                    Debug.DrawLine(GetWorldPosition(x, y), GetWorldPosition(x, y + 1), gridColor);
+                    Debug.DrawLine(GetWorldPosition(x, y), GetWorldPosition(x + 1, y), gridColor);
                 }
-            Debug.DrawLine(GetWorldPosition(0, height), GetWorldPosition(width, height), Color.black);
-            Debug.DrawLine(GetWorldPosition(width, 0), GetWorldPosition(width, height), Color.black);
+            Debug.DrawLine(GetWorldPosition(0, height), GetWorldPosition(width, height), gridColor);
+            Debug.DrawLine(GetWorldPosition(width, 0), GetWorldPosition(width, height), gridColor);
         }
 
         private void ComputeGridPoints()
@@ -49,7 +49,7 @@ namespace Core
                 for(int x = 0; x < width; x++)
                     for(int y = 0; y < height; y++)
                     {
-                        Vector2 pos = GetWorldPosition(x, y) + new Vector2(cellSize, cellSize) * 0.5f;
+                        Vector2 pos = GetWorldPosition(x, y) + cellSize * 0.5f;
                         if(!gridPoints.Contains(pos))
                             gridPoints.Add(pos);
                     }
@@ -62,8 +62,8 @@ namespace Core
         ///<returns> The width(x) and height(y) of the cell the world position correspond on</returns>
         public void GetXY(Vector2 worldPosition, out int x, out int y)
         {
-            x = Mathf.FloorToInt(worldPosition.x / cellSize - origin.x);
-            y = Mathf.FloorToInt(worldPosition.y / cellSize - origin.y);
+            x = Mathf.FloorToInt(worldPosition.x / cellSize.x - origin.x);
+            y = Mathf.FloorToInt(worldPosition.y / cellSize.y - origin.y);
         }
 
         public Vector2Int[] GetNearbyCells(Vector2 worldPosition)
